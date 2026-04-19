@@ -3,7 +3,10 @@ from __future__ import annotations
 import os
 
 from fastapi import FastAPI, HTTPException, Request
+from fastapi import status as fastapi_status
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from starlette.status import HTTP_422_UNPROCESSABLE_CONTENT
 from structlog.contextvars import bind_contextvars
 
 from .agent import LabAgent
@@ -42,10 +45,31 @@ async def metrics() -> dict:
     return snapshot()
 
 
+# This log requests that fail validation (which is a good practice for Observability to
+# see if people are sending bad data),
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    log.warning(
+        "request_validation_failed",
+        service="api",
+        correlation_id=getattr(request.state, "correlation_id", "MISSING"),
+        payload={"errors": exc.errors()},
+    )
+    return JSONResponse(
+        status_code=fastapi_status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content={"detail": exc.errors()},
+    )
+
+
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: Request, body: ChatRequest) -> ChatResponse:
-    # TODO: Enrich logs with request context (user_id_hash, session_id, feature, model, env)
-    # bind_contextvars(...)
+    bind_contextvars(
+        user_id_hash=hash_user_id(body.user_id),
+        session_id=body.session_id,
+        feature=body.feature,
+        model="gpt-4o-mini",
+        env=os.getenv("APP_ENV", "dev"),
+    )
 
     log.info(
         "request_received",
