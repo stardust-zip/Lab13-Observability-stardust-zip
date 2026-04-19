@@ -14,18 +14,18 @@ Create a virtual environment, install `requirements.txt`, copy `.env.example` to
 - **Action:** Open `app/main.py`. Find the `/chat` endpoint and use `bind_contextvars()` to attach `user_id_hash`, `session_id`, `feature`, `model`, and `env` to all subsequent log entries.
 - **Validation:** Check `data/logs.jsonl`. Your latest logs should now feature keys for `user_id_hash` and `session_id` alongside the standard timestamp and level keys.
 
-## [x] Step 4: Configure PII Scrubbing (Member A)
+## [ ] Step 4: Configure PII Scrubbing (Member A)
 
 - **Action:** Open `app/logging_config.py`. Uncomment the `scrub_event` processor registration inside `structlog.configure()`.
 - **Validation for Steps 2-4:** Stop your app and run `python scripts/validate_logs.py`.
 - **Success Indicator:** The script should output `[PASSED]` for Basic JSON schema, Correlation ID propagation, Log enrichment, and PII scrubbing. Ensure your Estimated Score is at least 80/100, which is the passing criteria for the grading script.
 
-## [x] Step 5: Tracing Implementation (Group)
+## [ ] Step 5: Tracing Implementation (Group)
 
 - **Action:** Add your `LANGFUSE_PUBLIC_KEY` and `LANGFUSE_SECRET_KEY` to the `.env` file. Use `python scripts/load_test.py --concurrency 5` to generate requests.
 - **Validation:** Log into Langfuse. You must have a minimum of 10 visible traces recorded to pass the lab.
 
-## [ ] Step 6: Dashboarding & SLOs (Member C & D)
+## [x] Step 6: Dashboarding & SLOs (Member C & D)
 
 - **Action:** Create a dashboard that strictly features these 6 panels: Latency (P50/P95/P99), Traffic, Error rate breakdown, Cost over time, Tokens in/out, and a Quality proxy. Add visible threshold lines to these graphs representing your SLOs.
 - **Validation:** The dashboard must auto-refresh every 15-30 seconds, display clear units, and be constrained to 6-8 total panels. Take a screenshot for the report.
