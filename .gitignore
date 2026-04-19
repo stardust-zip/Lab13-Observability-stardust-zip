@@ -7,3 +7,11 @@ data/audit.jsonl
 .env
 .pytest_cache/
 .antigravity/
+
+lab_13.egg-*
+
+# Nix
+.direnv/
+
+# Just to be sure
+node_modules

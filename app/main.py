@@ -46,7 +46,7 @@ async def metrics() -> dict:
 async def chat(request: Request, body: ChatRequest) -> ChatResponse:
     # TODO: Enrich logs with request context (user_id_hash, session_id, feature, model, env)
     # bind_contextvars(...)
-    
+
     log.info(
         "request_received",
         service="api",
@@ -84,7 +84,10 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
             "request_failed",
             service="api",
             error_type=error_type,
-            payload={"detail": str(exc), "message_preview": summarize_text(body.message)},
+            payload={
+                "detail": str(exc),
+                "message_preview": summarize_text(body.message),
+            },
         )
         raise HTTPException(status_code=500, detail=error_type) from exc
 
@@ -107,3 +110,6 @@ async def disable_incident(name: str) -> JSONResponse:
         return JSONResponse({"ok": True, "incidents": status()})
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+# uvicorn app.main:app --reload

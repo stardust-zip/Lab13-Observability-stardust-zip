@@ -1,0 +1,44 @@
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lab-13"
+version = "0.1.0"
+description = "Nothing yet"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.136.0",
+    "uvicorn[standard]>=0.44.0",
+    "pydantic>=2.13.2",
+    "structlog>=25.5.0",
+    "python-dotenv>=1.2.2",
+    "httpx>=0.28.1",
+    "langfuse>=4.3.1",
+]
+
+[project.optional-dependencies]
+dev = [
+	"pytest",
+
+	# pip install . install the core application
+	# pip install ".[dev]" installs the app PLUS all these testing and linting tools
+]
+
+
+[tool.pytest.ini_options]
+# Tell pytest to add the 'src' directory to the PYTHONPATH
+# pythonpath = ["src"]
+
+[tool.basedpyright]
+# Tell basedpyright to add 'src' to its list of
+# paths to search for imports. This directly fixes the
+# "reportMissingImports" error.
+# extraPaths = ["src"]
+# include = ["src"]
+exclude = ["__pycache__", ".direnv", ".mypy_cache", ".git", ".venv"]
+
+[tool.setuptools]
+packages = ["app" ]
