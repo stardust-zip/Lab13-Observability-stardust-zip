@@ -26,14 +26,18 @@ class LabAgent:
         self.llm = FakeLLM(model=model)
 
     @observe()
-    def run(self, user_id: str, feature: str, session_id: str, message: str) -> AgentResult:
+    def run(
+        self, user_id: str, feature: str, session_id: str, message: str
+    ) -> AgentResult:
         started = time.perf_counter()
         docs = retrieve(message)
         prompt = f"Feature={feature}\nDocs={docs}\nQuestion={message}"
         response = self.llm.generate(prompt)
         quality_score = self._heuristic_quality(message, response.text, docs)
         latency_ms = int((time.perf_counter() - started) * 1000)
-        cost_usd = self._estimate_cost(response.usage.input_tokens, response.usage.output_tokens)
+        cost_usd = self._estimate_cost(
+            response.usage.input_tokens, response.usage.output_tokens
+        )
 
         langfuse_context.update_current_trace(
             user_id=hash_user_id(user_id),
@@ -42,7 +46,10 @@ class LabAgent:
         )
         langfuse_context.update_current_observation(
             metadata={"doc_count": len(docs), "query_preview": summarize_text(message)},
-            usage_details={"input": response.usage.input_tokens, "output": response.usage.output_tokens},
+            usage_details={
+                "input": response.usage.input_tokens,
+                "output": response.usage.output_tokens,
+            },
         )
 
         metrics.record_request(
@@ -73,7 +80,9 @@ class LabAgent:
             score += 0.2
         if len(answer) > 40:
             score += 0.1
-        if question.lower().split()[0:1] and any(token in answer.lower() for token in question.lower().split()[:3]):
+        if question.lower().split()[0:1] and any(
+            token in answer.lower() for token in question.lower().split()[:3]
+        ):
             score += 0.1
         if "[REDACTED" in answer:
             score -= 0.2

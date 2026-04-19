@@ -4,11 +4,13 @@ import os
 from typing import Any
 
 try:
-    from langfuse.decorators import observe, langfuse_context
+    from langfuse.decorators import langfuse_context, observe
 except Exception:  # pragma: no cover
+
     def observe(*args: Any, **kwargs: Any):
         def decorator(func):
             return func
+
         return decorator
 
     class _DummyContext:
