@@ -82,6 +82,7 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
             feature=body.feature,
             session_id=body.session_id,
             message=body.message,
+            correlation_id=request.state.correlation_id,  # <--- WE ADDED THIS LINE
         )
         log.info(
             "response_sent",

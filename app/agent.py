@@ -27,7 +27,12 @@ class LabAgent:
 
     @observe()
     def run(
-        self, user_id: str, feature: str, session_id: str, message: str
+        self,
+        user_id: str,
+        feature: str,
+        session_id: str,
+        message: str,
+        correlation_id: str,
     ) -> AgentResult:
         started = time.perf_counter()
         docs = retrieve(message)
@@ -42,7 +47,8 @@ class LabAgent:
         langfuse_context.update_current_trace(
             user_id=hash_user_id(user_id),
             session_id=session_id,
-            tags=["lab", feature, self.model],
+            tags=["lab", feature, self.model, correlation_id, "qa"],
+            metadata={"local_correlation_id": correlation_id},
         )
         langfuse_context.update_current_observation(
             metadata={"doc_count": len(docs), "query_preview": summarize_text(message)},

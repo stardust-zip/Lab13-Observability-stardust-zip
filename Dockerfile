@@ -7,7 +7,7 @@ WORKDIR /app
 
 # Copy your (fixed) requirements file and install dependencies globally in the container
 COPY requirements.txt .
-RUN uv pip install --system -r requirements.txt
+RUN apt-get update && apt-get install -y curl && uv pip install --system -r requirements.txt
 
 # Copy the rest of your application code
 COPY . .
